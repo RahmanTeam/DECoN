@@ -90,6 +90,7 @@ for(i in 1:length(sample.names)){												#for each sample:
 
 names(refs) = sample.names
 names(models) = sample.names
+if(!is.null(cnv.calls)){
 names(cnv.calls)[1] = "sample"
 cnv.calls$sample = paste(cnv.calls$sample)
 names(cnv.calls)[2] = "correlation"
@@ -182,8 +183,8 @@ if(!is.null(exon_numbers)){
     if(length(Brca)>0){
         a<-list(length=length(Brca))
         for(i in 1:length(Brca)){a[[i]]=which(brca[,Brca[i]])}
-        first_exon<-unlist(lapply(a,function(a,b)min(b[a,]$Clinical),exons))		#identifies the  first and last clinical exon in the deletion/duplication.
-        last_exon<-unlist(lapply(a,function(a,b)max(b[a,]$Clinical),exons))
+        first_exon<-unlist(lapply(a,function(a,b)min(b[a,]$Custom),exons))		#identifies the  first and last clinical exon in the deletion/duplication.
+        last_exon<-unlist(lapply(a,function(a,b)max(b[a,]$Custom),exons))
         Clinical.first[Brca] = first_exon
         Clinical.last[Brca] = last_exon
     }
@@ -424,5 +425,5 @@ save(ExomeCount,bed.file,counts,fasta,sample.names,bams,cnv.calls,cnv.calls_ids,
 }else{
 save(ExomeCount,bed.file,counts,fasta,sample.names,bams,cnv.calls,cnv.calls_ids,refs,models,exon_numbers,file=paste(out,".RData",sep=""))
 }
-
+}
 print("END makeCNVCalls.R")
