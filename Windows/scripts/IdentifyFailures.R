@@ -143,7 +143,7 @@ for(i in 1:length(ExonMedian)){													#tests median coverage for each exon
 #}
 
 
-if(!is.null(exon_numbers)){
+if(!is.null(exon_numbers)&any(Exon!="All")){
 
     exons<-read.table(exon_numbers,sep="\t",header=T)
     
@@ -157,7 +157,7 @@ if(!is.null(exon_numbers)){
 
     Clinical_Numbering=rep("NA",length(Exon))
 
-    Clinical_Numbering[paste(Exon)%in%row.names(failed.calls[Brca,])] = exons$Clinical[a]
+    Clinical_Numbering[paste(Exon)%in%row.names(failed.calls[Brca,])] = exons$Custom[a]
 
 
 Failures<-data.frame(Sample,Exon,Types,Gene,Clinical_Numbering,Details)
