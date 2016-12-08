@@ -11,7 +11,7 @@ Echo %mincorr%
 set /p mincov=Enter coverage threshold (optional, default=100): || set mincov=100 
 Echo %mincov%
 
-set /p exons=Enter clinical exon numbers file (optional): || set exons=NULL 
+set /p exons=Enter custom exon numbering file (optional): || set exons=NULL 
 Echo %exons%
 
 set /p custom=Generate output for custom exons (TRUE or FALSE): || set custom=FALSE 
