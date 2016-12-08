@@ -10,7 +10,7 @@ set /p tp=Enter transition probability (optional, default =.01): || set tp=0.01
 
 echo %tp%
 
-set /p exons=Enter clinical exon numbers file (optional): || set exons=NULL 
+set /p exons=Enter custom exon numbering file (optional): || set exons=NULL 
 
 echo %exons%
 
