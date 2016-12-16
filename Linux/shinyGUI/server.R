@@ -329,7 +329,7 @@ shinyServer(function(input, output) {
 		levels(Data1$testref)=c("Test Sample","Reference Sample","Affected exon")
 		new_cols=c("blue","gray","red")
                 	
-                A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref)) 
+                A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))
                 A1<-A1 + geom_point(cex=2.5,lwd=1.5) 
                 A1<-A1 + scale_colour_manual(values=new_cols)  
                 A1<-A1 + geom_line(data=subset(Data1,testref=="Reference Sample"),lty="dashed",lwd=1.5,col="grey") 
@@ -378,7 +378,7 @@ shinyServer(function(input, output) {
 		    levels(Data1$testref)=c("Test Sample","Reference Sample","Affected exon")
     		    new_cols=c("blue","gray","red")
 					
-                    A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))  
+                    A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))
                     A1<-A1 + geom_point(cex=2.5,lwd=1.5) 
                     A1<-A1 + scale_colour_manual(values=new_cols)  
                     A1<-A1 + geom_line(data=subset(Data1,testref=="Reference Sample"),lty="dashed",lwd=1.5,col="grey") 
@@ -426,7 +426,7 @@ shinyServer(function(input, output) {
 		    levels(Data1$testref)=c("Test Sample","Affected exon")
 		    new_cols=c("blue","red")
                 	
-                    A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))  
+                    A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))
                     A1<-A1 + geom_point(cex=2.5,lwd=1.5) 
                     A1<-A1 + scale_colour_manual(values=new_cols) 
                     A1<-A1 + geom_line(data=subset(Data1,testref=="Test Sample"),lty="dashed",lwd=1.5,col="blue") 
