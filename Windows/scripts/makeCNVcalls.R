@@ -264,8 +264,8 @@ if(plotOutput!="None"){
     for(call_index in 1:nrow(cnv.calls_plot)){
         
         Sample<-cnv.calls_plot[call_index,]$sample
-        Gene<-cnv.calls_plot[call_index,]$Gene
-        exonRange<-which(bed.file[,4]==Gene)
+        Gene<-unlist(strsplit(cnv.calls_plot[call_index,]$Gene,split=", "))
+        exonRange<-which(bed.file[,4]%in%Gene)
 
         if((cnv.calls_plot[call_index,]$start.p-5)<min(exonRange) & ((cnv.calls_plot[call_index,]$start.p-5)>=1)){exonRange=(cnv.calls_plot[call_index,]$start.p-5):max(exonRange)}
         if((cnv.calls_plot[call_index,]$start.p-5)<min(exonRange) & ((cnv.calls_plot[call_index,]$start.p-5)<=0)){exonRange=1:max(exonRange)}
@@ -397,8 +397,8 @@ temp = cnv.calls[cnv.calls$sample==Sample,]
         if(sum(cnv_genes_sample==Gene)==1){
             pdf(file=paste(plotFolder,"/",Sample,"_",Gene,".pdf",sep=""),useDingbats=FALSE)
         }else{
-            cnv_genes_sample_index=which(cnv.calls_plot$sample==Sample & cnv.calls_plot$Gene==Gene)
-            pdf(file=paste(plotFolder,"/",Sample,"_",Gene,"_",which(cnv_genes_sample_index==call_index),".pdf",sep=""),useDingbats=F)
+            cnv_genes_sample_index=which(cnv.calls_plot$sample==Sample & cnv.calls_plot$Gene==paste(Gene,collapse=", "))
+            pdf(file=paste(plotFolder,"/",Sample,"_",paste(Gene,collapse="_"),"_",which(cnv_genes_sample_index==call_index),".pdf",sep=""),useDingbats=F)
         }
     
         if(sum(cnv_genes_sample==Gene)>2){print(paste("WARNING: more than 2 calls in ",Gene,", could affect plotting",sep=""))}
