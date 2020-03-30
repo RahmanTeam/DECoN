@@ -2,7 +2,7 @@ packrat::on()
 print("BEGIN ReadInBams.R")
 
 library(R.utils)
-
+source('getBamCounts.R')
 
 ########## Process inputs #######
 
