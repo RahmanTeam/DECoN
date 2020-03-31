@@ -32,7 +32,6 @@ if(is.null(output)){output="DECoNBams"}
 
 #################################
 
-library(ExomeDepth)
 source('getBamCounts.R')
 
 multi_strsplit<-function(x,splits,y){                                                   #function which recursively splits x by an element of 'splits' then extracts the y element of the split vector
