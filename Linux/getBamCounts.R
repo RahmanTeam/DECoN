@@ -172,12 +172,13 @@ if (!is.null(referenceFasta)) {
   #   rdata[[ basename(bam) ]] <- countBamInGRanges.exomeDepth ( bam.file = bam, index = index, granges = target, min.mapq = min.mapq, read.width = read.width)
   #   message("Number of counted fragments : ", sum(rdata[[ basename(bam) ]]))
   # }
-  r <- foreach(i=1:nfiles, .combine='cbind') %dopar% {
+  r <- foreach(i=1:nfiles, .export='countBamInGRanges.exomeDepth', .combine='cbind') %dopar% {
     bam <- bam.files[ i ]
     index <- index.files[ i ]
     countBamInGRanges.exomeDepth ( bam.file = bam, index = index, granges = target, min.mapq = min.mapq, read.width = read.width)
   }
   colnames(r) <- basename(bam.files)
+  rdata <- data.frame(rdata)
   rdata <- cbind(rdata, r)
 
   return(data.frame(rdata))
