@@ -15,7 +15,7 @@ print(Data)
 
 file.copy(Data, "shinyGUI/Data.RData",overwrite=TRUE)
 
-runApp("shinyGUI",launch.browser=T)
+runApp("shinyGUI",launch.browser=T,port=5888)
 
 
 print("END runShiny.R")
