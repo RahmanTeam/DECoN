@@ -1,5 +1,4 @@
 packrat::on()
-
 print("BEGIN runShiny.R")
 
 library(methods)
@@ -10,12 +9,10 @@ library(R.utils)
 args=commandArgs(asValues=TRUE)
 
 Data<-args$Rdata
-
-print(Data)
+cnvs <- args$cnvs
 
 file.copy(Data, "shinyGUI/Data.RData",overwrite=TRUE)
-
-runApp("shinyGUI",launch.browser=T,port=5888)
-
+file.copy(cnvs, "shinyGUI/cnvs.csv",overwrite=TRUE)
+runApp("shinyGUI",launch.browser=F, host='0.0.0.0', port=5888)
 
 print("END runShiny.R")

@@ -4,15 +4,16 @@ library(reshape)
 library(grid)
 library(ExomeDepth)
 
-
 load('Data.RData')          #wrapper script copies data to this hard path
 
-
+genesis_calls <- read.csv('cnvs.csv')
+cnv.calls$merge_id <- paste(gsub('_PE_sorted', '', cnv.calls$sample), cnv.calls$start, cnv.calls$end, sep='-')
+genesis_calls$merge_id <- paste(genesis_calls$sample, genesis_calls$start, genesis_calls$end, sep='-')
+cnv.calls<- cnv.calls[cnv.calls$merge_id %in% genesis_calls$merge_id,]
+cnv.calls <- cnv.calls[ , !(names(cnv.calls) %in% 'merge_id')]
 # Define server logic required to draw a histogram
+
 shinyServer(function(input, output) {
-
-
-
     bed.file.disp<-cbind(1:nrow(bed.file),bed.file)
     if(ncol(bed.file.disp==4)){colnames(bed.file.disp)=c("Exon Index","Chromosome","Start","Stop")}
     if(ncol(bed.file.disp==5)){colnames(bed.file.disp)=c("Exon Index","Chromosome","Start","Stop","Gene")}
@@ -290,13 +291,13 @@ shinyServer(function(input, output) {
 
     output$minEx <- renderUI({
         if(input$selVar1!="None"){
-            numericInput("minEx1",min=1,max=nrow(bed.file)-1,value=max(cnv.calls[input$selVar1,]$start.p-5,1),label="First exon")
+            numericInput("minEx1",min=1,max=nrow(bed.file)-1,value=max(cnv.calls[strtoi(input$selVar1),]$start.p-5,1),label="First exon")
         }
     })
 
     output$maxEx <- renderUI({
         if(input$selVar1!="None"){
-            numericInput("maxEx1",min=2,max=nrow(bed.file),value=min(cnv.calls[input$selVar1,]$end.p+5,nrow(bed.file)),label="Last")
+            numericInput("maxEx1",min=2,max=nrow(bed.file),value=min(cnv.calls[strtoi(input$selVar1),]$end.p+5,nrow(bed.file)),label="Last")
         }
     })
 
@@ -304,7 +305,7 @@ shinyServer(function(input, output) {
         if(input$selVar1=="None"){
             plot(NULL,xlim=c(1,10),ylim=c(0,1000))
         }else{
-            Sample<-cnv.calls[input$selVar1,]$sample
+            Sample<-cnv.calls[strtoi(input$selVar1),]$sample
             exonRange<-input$minEx1:input$maxEx1
 	    VariantExon<- unlist(mapply(function(x,y)x:y,cnv.calls[cnv.calls$sample==Sample,]$start.p,cnv.calls[cnv.calls$sample==Sample,]$end.p))       
             if(input$chSamp==1){
@@ -490,7 +491,7 @@ shinyServer(function(input, output) {
         if(input$selVar1=="None"){
             plot(NULL,xlim=c(1,10),ylim=c(0,1000))
         }else{
-            Sample<-cnv.calls[input$selVar1,]$sample
+            Sample<-cnv.calls[strtoi(input$selVar1),]$sample
             exonRange<-input$minEx1:input$maxEx1
             refs_sample<-refs[[Sample]]
             Totals<-rowSums(ExomeCount[exonRange,c(Sample,refs_sample)])
