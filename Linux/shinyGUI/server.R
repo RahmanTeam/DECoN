@@ -153,6 +153,7 @@ shinyServer(function(input, output) {
                 if(input$plotScale==1){p <- p + ylab("Coverage")}
                 if(input$plotScale==2){p <- p + ylab("Log (Coverage)")}
                 p<-p + geom_point(data=Data1[Data1$variable==input$SampHigh,],aes(x=exons,y=value),colour="blue",cex=2.5)
+                p <- p + labs(title=paste('Sample:', gsub("_PE_sorted","", input$PlotSamp), '; Gene: ', input$PlotGenes, sep=' ' ))
                 p
             
             }else if(input$plotType==2){
@@ -172,10 +173,12 @@ shinyServer(function(input, output) {
                 for(gene in input$PlotGenes){
                     p<-p + geom_line(data=Data1[Data1$variable==input$SampHigh & Data1$exons%in%which(bed.file[,4]==gene),],aes(x=exons,y=value,group=variable),colour="blue")
                 }
+                p <- p + labs(title=paste('Sample:', gsub("_PE_sorted","", input$PlotSamp), '; Gene: ', input$PlotGenes, sep=' ' ))
                 p
             }
 
         })
+        
 
 	
 
@@ -331,6 +334,7 @@ shinyServer(function(input, output) {
 		new_cols=c("blue","gray","red")
                 	
                 A1<-ggplot(data=Data1,aes(x=exonRange,y=value,group=variable,colour=testref))
+                A1 <- A1 + labs(title=gsub("_PE_sorted","",Sample))
                 A1<-A1 + geom_point(cex=2.5,lwd=1.5) 
                 A1<-A1 + scale_colour_manual(values=new_cols)  
                 A1<-A1 + geom_line(data=subset(Data1,testref=="Reference Sample"),lty="dashed",lwd=1.5,col="grey") 
