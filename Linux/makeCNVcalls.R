@@ -1,16 +1,28 @@
-packrat::on()
+renv::restore()
 
 library(R.utils)
-
+library(optparse)
 print("BEGIN makeCNVCalls.R")
 
 
 
 ######Parsing input options and setting defaults########
 
-args=commandArgs(asValue=TRUE)
+option_list<-list(
+    make_option('--RData',help='Summary RData file (required)',dest='RData'),
+    make_option('--transProb',default=.01,help='Transition probability, default=.01',dest='transProb'),
+    make_option('--exons',default=NULL,help='Exon Numbering (optional)',dest='exons'),
+    make_option('--custom',default=FALSE,help='Should custom reporting be used, default FALSE',dest='custom'),
+    make_option('--out',default='DECoNResults',help='output prefix, default DECoN',dest='out'),
+    make_option('--plot',default='All',help='options: All(default), None, Custom',dest='plot'),
+    make_option('--plotFolder',default='DECoNPlots',help='default: DECoNPlots',dest='plotFolder')
+)
 
-count_data=args$Rdata
+
+opt<-parse_args(OptionParser(option_list=option_list))
+
+count_data=opt$RData
+if(count_data=="NULL"){count_data=NULL}
 if(is.null(count_data)){
     print("ERROR: no RData summary file provided -- Execution halted")
     quit()
@@ -18,41 +30,43 @@ if(is.null(count_data)){
 load(count_data)
 
 															#R workspace with the coverage data saved in - this workspace already has the bedfile, fasta file saved in it.
-trans_prob=as.numeric(args$transProb)													#transition probability for the HMM
-if(length(trans_prob)==0){trans_prob=0.01}
+trans_prob=as.numeric(opt$transProb)													#transition probability for the HMM
 
-exon_numbers=args$exons
+exon_numbers=opt$exons
 
-out=args$out
-if(is.null(out)){out="DECoNResults"}
+Custom=as.logical(opt$custom)
 
+b1b2Calls=FALSE
 
-Custom=as.logical(args$custom)
-if(length(Custom)==0){Custom=FALSE}
+plotOutput=opt$plot
 
-b1b2Calls=as.logical(args$BRCA)
-if(length(b1b2Calls)==0){b1b2Calls=FALSE}
-
-plotOutput=args$plot
-if(is.null(plotOutput)){plotOutput="All"}
 if(!plotOutput%in%c("None","Custom","All")){print("WARNING: plot argument should be one of: None, Custom or All")}
 
-plotFolder=args$plotFolder
-if(is.null(plotFolder)){plotFolder="DECoNPlots"}
+plotFolder=opt$plotFolder
 if(!file.exists(plotFolder)){dir.create(plotFolder)}
+
+out=opt$out
+
 
 #################################################################
 library(grid)
 library(ExomeDepth)
 library(reshape)
 library(ggplot2)
+#######Make sure bed file is in chromosome order ################
+
+temp<-gsub('chr','',bed.file[,1])
+temp1<-order(as.numeric(temp))
+bed.file=bed.file[temp1,]
+
+
 #################CNV CALLING#######################################
 
 ExomeCount<-as(counts, 'data.frame')											#converts counts, a ranged data object, to a data frame
 
-ExomeCount$chromosome <- gsub(as.character(ExomeCount$space),pattern = 'chr',replacement = '') 
+ExomeCount$chromosome <- gsub(as.character(ExomeCount$chromosome),pattern = 'chr',replacement = '') 
 																				#remove any chr letters, and coerce to a string.
-colnames(ExomeCount)[1:length(sample.names)+6]=sample.names						#assigns the sample names to each column 
+colnames(ExomeCount)[1:length(sample.names)+4]=sample.names						#assigns the sample names to each column 
 
 cnv.calls = NULL
 refs<-list()
@@ -69,7 +83,7 @@ for(i in 1:length(sample.names)){												#for each sample:
     my.reference.selected <- apply(X = my.matrix,MAR = 1,FUN = sum)				#sums the selected samples across each exon
 
     all.exons <- new('ExomeDepth', test = my.test, reference = my.reference.selected, formula = 'cbind(test, reference) ~ 1')       #creates ExomeDepth object containing test data, reference data, and linear relationship between them. Automatically calculates likelihoods
-    all.exons <- CallCNVs(x = all.exons, transition.probability = trans_prob, chromosome = ExomeCount$space, start = ExomeCount$start, end = ExomeCount$end, name = ExomeCount$names)	#fits a HMM with 3 states to read depth data; transition.probability - transition probability for HMM from normal to del/dup. Returns ExomeDepth object with CNVcalls
+    all.exons <- CallCNVs(x = all.exons, transition.probability = trans_prob, chromosome = ExomeCount$chromosome, start = ExomeCount$start, end = ExomeCount$end, name = ExomeCount$exon)	#fits a HMM with 3 states to read depth data; transition.probability - transition probability for HMM from normal to del/dup. Returns ExomeDepth object with CNVcalls
 
     my.ref.counts <- apply(my.matrix, MAR = 1, FUN = sum)
     
@@ -235,6 +249,7 @@ if(plotOutput!="None"){
         cnv.calls_plot=cnv.calls_ids
     }
 
+	cnv.calls_plot$chr=paste('chr',cnv.calls_plot$chromosome,sep='')
 
     Index=vector(length=nrow(bed.file))
     Index[1]=1
@@ -272,10 +287,10 @@ if(plotOutput!="None"){
         if(!singlechr){
             if(bed.file[exonRange[1],1]!=cnv.calls_plot[call_index,]$chr){
                 prev=TRUE
-                newchr=paste("Chr",bed.file[exonRange[1],1],sep=" ")
+                newchr=bed.file[exonRange[1],1]
             }else{
                 prev=FALSE
-                newchr=paste("Chr",bed.file[exonRange[length(exonRange)],1],sep=" ")
+                newchr=bed.file[exonRange[length(exonRange)],1]
             }
             exonRange=exonRange[bed.file[exonRange,1]==cnv.calls_plot[call_index,]$chr]
         }
@@ -292,6 +307,7 @@ if(plotOutput!="None"){
         testref[Data1$variable==Sample]="blue"
         Data1<-data.frame(Data1,testref)
         levels(Data1$variable)=c(levels(Data1$variable),"VAR")
+	Data1$testref=as.factor(Data1$testref)
         levels(Data1$testref)=c(levels(Data1$testref),"red")
 
         data_temp<-Data1[Data1$variable==Sample & Data1$exonRange%in%VariantExon,]
@@ -337,7 +353,7 @@ if(plotOutput!="None"){
         mp<-tapply(exonRange,temp[,5],mean)
         mp<-mp[genes_sel]
         len<-len[genes_sel]
-        Genes<-data.frame(genes_sel,mp,len-.5,1)
+        Genes<-data.frame(c(genes_sel),c(mp),c(len-.5),1)
         names(Genes)=c("Gene","MP","Length","Ind")
 
         if(!singlechr){

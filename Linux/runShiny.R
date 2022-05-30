@@ -1,4 +1,4 @@
-packrat::on()
+renv::restore()
 
 print("BEGIN runShiny.R")
 
@@ -6,16 +6,17 @@ library(methods)
 library(labeling)
 library(shiny)
 library(R.utils)
+library(optparse)
 
-args=commandArgs(asValues=TRUE)
+option_list<-list(make_option('--RData',help='Summary RData file (required)',dest='RData'))
 
-Data<-args$Rdata
+opt<-parse_args(OptionParser(option_list=option_list))
 
-print(Data)
+Data<-opt$RData
 
-file.copy(Data, "shinyGUI/Data.RData",overwrite=TRUE)
+file.copy(Data, "scripts/shinyGUI/Data.RData",overwrite=TRUE)
 
-runApp("shinyGUI",launch.browser=T)
+runApp("scripts/shinyGUI",launch.browser=T)
 
 
 print("END runShiny.R")

@@ -319,6 +319,7 @@ shinyServer(function(input, output) {
 		testref[Data1$variable==Sample]="blue"
 		Data1<-data.frame(Data1,testref)
 		levels(Data1$variable)=c(levels(Data1$variable),"VAR")
+		Data1$testref<-as.factor(Data1$testref)
 		levels(Data1$testref)=c(levels(Data1$testref),"red")
 		data_temp<-Data1[Data1$variable==Sample & Data1$exonRange%in%VariantExon,]
 	        if(nrow(data_temp)>0){
@@ -368,6 +369,7 @@ shinyServer(function(input, output) {
 		    testref[Data1$variable==Sample]="blue"
 		    Data1<-data.frame(Data1,testref)
 		    levels(Data1$variable)=c(levels(Data1$variable),"VAR")
+		    Data1$testref<-as.factor(Data1$testref)
 		    levels(Data1$testref)=c(levels(Data1$testref),"red")
 		    data_temp<-Data1[Data1$variable==Sample & Data1$exonRange%in%VariantExon,]
 		    if(nrow(data_temp)>0){
@@ -416,6 +418,7 @@ shinyServer(function(input, output) {
 		    testref[Data1$variable==Sample]="blue"
         	    Data1<-data.frame(Data1,testref)
         	    levels(Data1$variable)=c(levels(Data1$variable),"VAR")
+		    Data1$testref=as.factor(Data1$testref)
 		    levels(Data1$testref)=c(levels(Data1$testref),"red")
         	    data_temp<-Data1[Data1$variable==Sample & Data1$exonRange%in%VariantExon,]
         	    if(nrow(data_temp)>0){
@@ -468,7 +471,7 @@ shinyServer(function(input, output) {
             mp<-tapply(exonRange,temp[,5],mean)
             mp<-mp[genes_sel]
             len<-len[genes_sel]
-            Genes<-data.frame(genes_sel,mp,len-.5,1)
+            Genes<-data.frame(genes_sel,as.vector(mp),as.vector(len-.5),1)
             names(Genes)=c("Gene","MP","Length","Ind")
    
             if(!is.null(exon_numbers)){

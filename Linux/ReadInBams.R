@@ -1,35 +1,43 @@
-packrat::on()
+renv::restore()
 print("BEGIN ReadInBams.R")
 
 library(R.utils)
-
+library(optparse)
 
 ########## Process inputs #######
 
+option_list<-list(
+    make_option("--bams",help="text file containing list of bam files, or directory containing all bams files",dest='bams'),
+    make_option("--bed",help='bed file to be used',dest='bed'),
+    make_option("--fasta",help='fasta file to be used, optional',default=NULL,dest='fasta'),
+    make_option("--out",default="DECoN",help="output prefix, default =DECoN",dest='out')
+)
 
-args=commandArgs(asValue=TRUE)
+opt<-parse_args(OptionParser(option_list=option_list))
 
-bam_file=args$bams                                                                        #location of bam files; can be a directory containing only bam files to be processed or the name of a file containing a list of bam files to be processed.
-bedfile=args$bed                                                                         #name of bed file
-fasta=args$fasta                                                                        #name of fasta file
-output=args$out                                                                        #location and name of file to save the output to; will be saved as 'output_counts.RData'
+bam_file=opt$bams                                                                        #location of bam files; can be a directory containing only bam files to be processed or the name of a file containing a list of bam files to be processed.
+bedfile=opt$bed                                                                         #name of bed file
+fasta=opt$fasta                                                                       #name of fasta file
+output=opt$out                                                               #location and name of file to save the output to; will be saved as 'output_counts.RData'
 
 
+if(bam_file=="NULL"){bam_file=NULL}
 if(is.null(bam_file)){
 print("ERROR bam files must be provided. Execution halted")
 quit()
 }
 
 
+if(bedfile=="NULL"){bedfile=NULL}
 if(is.null(bedfile)){
 print("ERROR bed file must be provided. Execution halted")
 quit()
 }
 
+print(fasta)
+print(paste(fasta))
 
-
-if(is.null(output)){output="DECoNBams"}
-
+print(output)
 
 #################################
 
@@ -63,7 +71,7 @@ names(sample.names)<-NULL
 bed.file<-read.table(paste(bedfile))                                                    #reads in the bedfile and gives each column a name - expects 4 columns: chr, start, stop, name/gene.
 colnames(bed.file)<-c("chromosone","start","end","name")
  
-counts <- getBamCounts(bed.frame = bed.file, bam.files = bams, include.chr = FALSE, referenceFasta = paste(fasta))
+counts <- getBamCounts(bed.frame = bed.file, bam.files = bams, include.chr = FALSE, referenceFasta = fasta)
                                                                                         #reads in coverage info from each bam file in 'bams'; expects chromosomes to be given as numbers, eg 1, 2 etc, not chr1, chr2 etc.
 save(counts,bams,bed.file,sample.names,fasta,file=paste(output,".RData",sep=""))                                   #saves workspace as 'output_counts.RData'
    
