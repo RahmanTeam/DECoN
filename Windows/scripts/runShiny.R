@@ -1,4 +1,4 @@
-packrat::on()
+renv::restore()
 
 print("BEGIN runShiny.R")
 

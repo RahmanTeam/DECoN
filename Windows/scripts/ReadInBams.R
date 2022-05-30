@@ -1,4 +1,4 @@
-packrat::on()
+renv::restore()
 print("BEGIN ReadInBams.R")
 
 library(R.utils)
@@ -28,6 +28,9 @@ print("ERROR bed file must be provided. Execution halted")
 quit()
 }
 
+if(fasta=="NULL"){fasta=NULL}
+print(fasta)
+print(paste(fasta))
 
 if(output=="NULL"){output=NULL}
 if(is.null(output)){output="DECoNBams"}
@@ -65,7 +68,7 @@ names(sample.names)<-NULL
 bed.file<-read.table(paste(bedfile))                                                    #reads in the bedfile and gives each column a name - expects 4 columns: chr, start, stop, name/gene.
 colnames(bed.file)<-c("chromosone","start","end","name")
  
-counts <- getBamCounts(bed.frame = bed.file, bam.files = bams, include.chr = FALSE, referenceFasta = paste(fasta))
+counts <- getBamCounts(bed.frame = bed.file, bam.files = bams, include.chr = FALSE, referenceFasta = fasta)
                                                                                         #reads in coverage info from each bam file in 'bams'; expects chromosomes to be given as numbers, eg 1, 2 etc, not chr1, chr2 etc.
 save(counts,bams,bed.file,sample.names,fasta,file=paste(output,".RData",sep=""))                                   #saves workspace as 'output_counts.RData'
    

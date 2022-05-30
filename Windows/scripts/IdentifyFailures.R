@@ -1,4 +1,4 @@
-packrat::on()
+renv::restore()
 
 print("BEGIN IdentifyFailures.R")
 
@@ -44,9 +44,9 @@ library(ExomeDepth)
 
 ExomeCount<-as(counts, 'data.frame')											#converts counts, a ranged data object, to a data frame
 
-ExomeCount$chromosome <- gsub(as.character(ExomeCount$space),pattern = 'chr',replacement = '') 
+ExomeCount$chromosome <- gsub(as.character(ExomeCount$chromosome),pattern = 'chr',replacement = '') 
 																				#remove any chr letters, and coerce to a string.
-colnames(ExomeCount)[1:length(sample.names)+6]=sample.names						#assigns the sample names to each column 
+colnames(ExomeCount)[1:length(sample.names)+4]=sample.names						#assigns the sample names to each column 
 
 ReadDepths<-ExomeCount[,sample.names]											#extracts just the read depths
 
