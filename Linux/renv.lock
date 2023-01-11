@@ -115,10 +115,10 @@
     },
     "ExomeDepth": {
       "Package": "ExomeDepth",
-      "Version": "1.1.15",
+      "Version": "1.1.16",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "3be68f65adb647427f212b1b45b04305",
+      "Hash": "40c8dcac46dafff8ecef514c3e462132",
       "Requirements": [
         "Biostrings",
         "GenomicAlignments",
